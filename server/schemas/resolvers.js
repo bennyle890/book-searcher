@@ -37,6 +37,29 @@ const resolvers = {
             const token = signToken(user);
             return { token, user };
         },
-
+        saveBook: async (parent, args, context) => {
+            if (context.user) {
+                const updatedUser = await User.findOneAndUpdate (
+                    { _id: context.user._id },
+                    { $addToSet: {savedBooks: args } },
+                    { new: true, runValidators: true }
+                );
+                return updatedUser;
+            }
+            throw new AuthenticationError('You need to be logged in');
+        },
+        deleteBook: async (parent, { bookId }, context) => {
+            if (context.user) {
+                const updatedUser = await User.findOneAndUpdate (
+                    { _id: context.user._id },
+                    { $pull: { savedBooks: { bookId: bookid } } },
+                    { new: true }
+                );
+                return updatedUser;
+            }
+            throw new AuthenticationError('You need to be logged in');
+        }
     }
-}
+};
+
+module.exports = resolvers;
