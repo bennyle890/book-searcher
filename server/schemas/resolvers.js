@@ -12,7 +12,7 @@ const resolvers = {
 
                 return userData;
             }
-            throw new  AuthenticationError('Not logged in');
+            throw new AuthenticationError('Not logged in');
         },
     },
     Mutation: {
@@ -37,11 +37,11 @@ const resolvers = {
             const token = signToken(user);
             return { token, user };
         },
-        saveBook: async (parent, args, context) => {
+        saveBook: async (parent, { book }, context) => {
             if (context.user) {
                 const updatedUser = await User.findOneAndUpdate (
                     { _id: context.user._id },
-                    { $addToSet: {savedBooks: args } },
+                    { $addToSet: {savedBooks: book } },
                     { new: true, runValidators: true }
                 );
                 return updatedUser;
@@ -52,7 +52,7 @@ const resolvers = {
             if (context.user) {
                 const updatedUser = await User.findOneAndUpdate (
                     { _id: context.user._id },
-                    { $pull: { savedBooks: { bookId: bookid } } },
+                    { $pull: { savedBooks: { bookId: bookId } } },
                     { new: true }
                 );
                 return updatedUser;
